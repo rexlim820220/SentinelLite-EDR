@@ -23,6 +23,20 @@
 *.dll
 *.so.*
 
+# Visual Studio User Settings and Cache
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code-sense and Intellisense Cache
+*.VC.db
+*.VC.db-shm
+*.VC.db-wal
+*.VC.opendb
+ipch/
+
 
 # Fortran module files
 *.mod
