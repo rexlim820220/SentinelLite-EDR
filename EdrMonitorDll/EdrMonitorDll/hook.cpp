@@ -5,9 +5,11 @@
 
 extern void AttachAllHooks();
 extern void DetachAllHooks();
+extern ThreadSafeQueue* g_pSafeQueue;
 
 void InitializeHooks(ThreadSafeQueue& queue)
 {
+	g_pSafeQueue = &queue;
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
@@ -21,4 +23,5 @@ void UninitializeHooks() {
 
 	DetachAllHooks();
 	DetourTransactionCommit();
+	g_pSafeQueue = nullptr;
 }

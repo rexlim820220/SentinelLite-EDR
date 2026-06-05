@@ -1,8 +1,11 @@
 #pragma once
 #include <string>
+#include <vector>
 #include <chrono>
 #include <sstream>
 #include <iomanip>
+#include <optional>
+#include <windows.h>
 
 enum class Severity : uint8_t {
 	Info,
@@ -115,7 +118,6 @@ struct SecurityEvent {
 
 	SecurityEvent(const SecurityEvent&) = delete;
 	SecurityEvent& operator=(const SecurityEvent&) = delete;
-	SecurityEvent& operator=(SecurityEvent&&) = delete;
 
 	// ── Convert to text lines for Pipe transmission ─────────────────
 	[[nodiscard]] std::string Serialize() const {
@@ -172,7 +174,6 @@ struct SecurityEvent {
         else return std::nullopt;
 
         ev.process_name = Utf8ToWstr(parts[4]);
-		ev.details      = Utf8ToWstr(det);
 
         std::string det = parts[5];
         if (!det.empty() && det.back() == '\r') det.pop_back();

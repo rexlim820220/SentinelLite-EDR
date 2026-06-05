@@ -90,6 +90,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="api_monitor.cpp" />
+    <ClCompile Include="controller\main.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="pch.cpp">

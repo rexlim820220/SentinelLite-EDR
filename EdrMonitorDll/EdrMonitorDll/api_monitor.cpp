@@ -5,30 +5,15 @@
 #include "Detours/detours.h"
 #include <libloaderapi.h>
 
-extern ThreadSafeQueue* g_pSafeQueue;
-
 using PfnVirtualAllocEx = LPVOID(WINAPI*)(HANDLE, LPVOID, SIZE_T, DWORD, DWORD);
 using PfnCreateRemoteThread = HANDLE(WINAPI*)(HANDLE, LPSECURITY_ATTRIBUTES, SIZE_T, LPTHREAD_START_ROUTINE, LPVOID, DWORD, LPDWORD);
 using PfnRegSetValueExW = LSTATUS(WINAPI*)(HKEY, LPCWSTR, DWORD, DWORD, const BYTE*, DWORD);
 
+extern std::wstring g_processName;
+extern ThreadSafeQueue* g_pSafeQueue;
 PfnVirtualAllocEx TrueVirtualAllocEx = ::VirtualAllocEx;
 PfnCreateRemoteThread TrueCreateRemoteThread = ::CreateRemoteThread;
 PfnRegSetValueExW TrueRegSetValueExW = ::RegSetValueExW;
-
-std::wstring GetCurrentProcessName() {
-	wchar_t buffer[MAX_PATH] = { 0 };
-	DWORD size = MAX_PATH;
-	HANDLE hProcess = ::GetCurrentProcess();
-	if (::QueryFullProcessImageNameW(hProcess, 0, buffer, &size)) {
-		std::wstring path(buffer);
-		size_t pos = path.find_last_of(L"\\");
-		if (pos != std::wstring::npos) {
-			return path.substr(pos + 1);
-		}
-		return path;
-	}
-	return L"Unknown";
-}
 
 LPVOID WINAPI HookedVirtualAllocEx(
 	HANDLE hProcess,
@@ -39,7 +24,7 @@ LPVOID WINAPI HookedVirtualAllocEx(
 ) {
 	SecurityEvent ev;
 	ev.process_id = ::GetCurrentProcessId();
-	ev.process_name = ::GetCurrentProcessName();
+	ev.process_name = g_processName;
 	ev.api_called = ::ApiType::CreateRemoteThread;
 
 	if (hProcess != ::GetCurrentProcess()) {
@@ -69,7 +54,7 @@ HANDLE WINAPI HookedCreateRemoteThread(
 	LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD lpThreadId) {
 	SecurityEvent ev;
 	ev.process_id = ::GetCurrentProcessId();
-	ev.process_name = ::GetCurrentProcessName();
+	ev.process_name = g_processName;
 	ev.api_called = ApiType::VirtualAllocEx;
 
 	if (hProcess != ::GetCurrentProcess()) {
@@ -95,7 +80,7 @@ LSTATUS WINAPI HookedRegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserv
 	 KeyHandle, type, and size, since the actual Registry path is associated with hKey rather than lpValueName. */
 	SecurityEvent ev;
     ev.process_id   = ::GetCurrentProcessId();
-    ev.process_name = ::GetCurrentProcessName();
+    ev.process_name = g_processName;
     ev.api_called = ApiType::RegSetValueEx;
     ev.severity = Severity::Warning;
 
