@@ -40,7 +40,7 @@ LPVOID WINAPI HookedVirtualAllocEx(
 	SecurityEvent ev;
 	ev.process_id = ::GetCurrentProcessId();
 	ev.process_name = ::GetCurrentProcessName();
-	ev.api_called = ::ApiType::VirtualAllocEx;
+	ev.api_called = ::ApiType::CreateRemoteThread;
 
 	if (hProcess != ::GetCurrentProcess()) {
 		ev.severity = Severity::Critical;
@@ -91,26 +91,32 @@ HANDLE WINAPI HookedCreateRemoteThread(
 }
 
 LSTATUS WINAPI HookedRegSetValueExW(HKEY hKey, LPCWSTR lpValueName, DWORD Reserved, DWORD dwType, const BYTE* lpData, DWORD cbData) {
+	/**fix: Removed incorrect persistence detection based on lpValueName string matching and replaced it with generic Registry write monitoring that logs ValueName
+	 KeyHandle, type, and size, since the actual Registry path is associated with hKey rather than lpValueName. */
 	SecurityEvent ev;
-	ev.process_id = ::GetCurrentProcessId();
-	ev.process_name = ::GetCurrentProcessName();
-	ev.api_called = ApiType::RegSetValueEx;
-	ev.severity = Severity::Info;
-	ev.details = L"Registry write";
+    ev.process_id   = ::GetCurrentProcessId();
+    ev.process_name = ::GetCurrentProcessName();
+    ev.api_called = ApiType::RegSetValueEx;
+    ev.severity = Severity::Warning;
 
-	if (lpValueName) {
-		ev.details = L"ValueName = " + std::wstring(lpValueName);
-		if (wcsstr(lpValueName, L"Run") != nullptr || wcsstr(lpValueName, L"Sentinel") != nullptr)
-		{
-			ev.severity = Severity::Warning;
-			ev.details += L" [POTENTIAL PERSISTENCE]";
-		}
-	}
+    wchar_t detailsBuf[512] = {};
 
-	if (g_pSafeQueue) {
-		g_pSafeQueue->Push(std::move(ev));
-	}
-	return TrueRegSetValueExW(hKey, lpValueName, Reserved, dwType, lpData, cbData);
+    wsprintfW(
+        detailsBuf,
+        L"ValueName=%s, KeyHandle=0x%p, Type=%u, Size=%u",
+        lpValueName ? lpValueName : L"(null)",
+        hKey,
+        dwType,
+        cbData);
+
+    ev.details = detailsBuf;
+
+    if (g_pSafeQueue)
+    {
+        g_pSafeQueue->Push(std::move(ev));
+    }
+
+    return TrueRegSetValueExW(hKey, lpValueName, Reserved, dwType, lpData, cbData);
 }
 
 void AttachAllHooks() {
