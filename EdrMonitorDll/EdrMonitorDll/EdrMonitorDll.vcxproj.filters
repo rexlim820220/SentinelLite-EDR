@@ -35,9 +35,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
@@ -45,9 +42,6 @@
       <Filter>來源檔案</Filter>
     </ClCompile>
     <ClCompile Include="api_monitor.cpp">
-      <Filter>來源檔案</Filter>
-    </ClCompile>
-    <ClCompile Include="controller\main.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
   </ItemGroup>

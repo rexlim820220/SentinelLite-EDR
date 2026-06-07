@@ -48,6 +48,11 @@ ipch/
 *.a
 *.lib
 
+# Visual Studio Build Outputs
+x64/
+[Dd]ebug/
+[Rr]elease/
+
 # Executables
 *.exe
 *.out

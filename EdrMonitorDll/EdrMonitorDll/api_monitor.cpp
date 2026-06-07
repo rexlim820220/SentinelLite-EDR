@@ -9,7 +9,8 @@ using PfnVirtualAllocEx = LPVOID(WINAPI*)(HANDLE, LPVOID, SIZE_T, DWORD, DWORD);
 using PfnCreateRemoteThread = HANDLE(WINAPI*)(HANDLE, LPSECURITY_ATTRIBUTES, SIZE_T, LPTHREAD_START_ROUTINE, LPVOID, DWORD, LPDWORD);
 using PfnRegSetValueExW = LSTATUS(WINAPI*)(HKEY, LPCWSTR, DWORD, DWORD, const BYTE*, DWORD);
 
-extern std::wstring g_processName;
+std::wstring g_processName;
+
 extern ThreadSafeQueue* g_pSafeQueue;
 PfnVirtualAllocEx TrueVirtualAllocEx = ::VirtualAllocEx;
 PfnCreateRemoteThread TrueCreateRemoteThread = ::CreateRemoteThread;
@@ -25,14 +26,14 @@ LPVOID WINAPI HookedVirtualAllocEx(
 	SecurityEvent ev;
 	ev.process_id = ::GetCurrentProcessId();
 	ev.process_name = g_processName;
-	ev.api_called = ::ApiType::CreateRemoteThread;
+	ev.api_called = ::ApiType::VirtualAllocEx;
 
 	if (hProcess != ::GetCurrentProcess()) {
 		ev.severity = Severity::Critical;
 		DWORD targetPid = ::GetProcessId(hProcess);
 
 		wchar_t detailsBuf[256];
-		wsprintfW(detailsBuf, L"RemotePID=%lu, Size=%llu, Protect=0x%lX", targetPid, (unsigned long long)dwSize, flProtect);
+		wsprintfW(detailsBuf, L"RemotePID=%lu, Size=%Iu, Protect=0x%lX", targetPid, (unsigned long long)dwSize, flProtect);
 		ev.details = detailsBuf;
 	}
 	else {
@@ -55,7 +56,7 @@ HANDLE WINAPI HookedCreateRemoteThread(
 	SecurityEvent ev;
 	ev.process_id = ::GetCurrentProcessId();
 	ev.process_name = g_processName;
-	ev.api_called = ApiType::VirtualAllocEx;
+	ev.api_called = ApiType::CreateRemoteThread;
 
 	if (hProcess != ::GetCurrentProcess()) {
 		ev.severity = Severity::Critical;
