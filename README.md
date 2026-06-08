@@ -1,41 +1,72 @@
 # SentinelLite-EDR
+
 A lightweight user-space Endpoint Detection and Response (EDR) proof-of-concept implemented in modern C++17.
+
+## Architecture
 
 ```mermaid
 graph TD
-    %% 節點樣式定義
-    classDef userSpace fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px;
-    classDef kernelSpace fill:#ffe0b2,stroke:#ff9800,stroke-width:2px;
-    classDef rAII fill:#e8f5e9,stroke:#4caf50,stroke-width:2px;
-
-    %% 模組 A：控制器
-    subgraph EDR_Controller [EDR 控制器 - 主程式 EXE]
-        A[主執行緒 UI/管理] -->|1. OpenProcess / VirtualAllocEx| B(目標行程: 如 Notepad.exe)
-        A -->|2. CreateRemoteThread| B
-        
-        subgraph Thread_Pool [多執行緒日誌核心]
-            C[工作執行緒 A] -->|4. 讀取具名管道| D[Thread-Safe Queue]
-            C2[工作執行緒 B] -->|4. 讀取具名管道| D
-            D -->|5. RAII Unique_Lock| E[本地安全日誌檔案]
-        end
+    subgraph ControllerEXE ["ControllerEXE.exe (EDR Engine)"]
+        A[main.cpp] -->|InstallHooks| B[Microsoft Detours]
+        B -->|JMP patch| C[HookedVirtualAllocEx]
+        B -->|JMP patch| D[HookedCreateRemoteThread]
+        B -->|JMP patch| E[HookedRegSetValueExW]
+        C -->|Push SecurityEvent| F[ThreadSafeQueue]
+        D -->|Push SecurityEvent| F
+        E -->|Push SecurityEvent| F
+        F -->|Pop with timeout| G[Main Loop / Console Alert]
+        C -->|Pass-through| H[TrueVirtualAllocEx]
+        D -->|Pass-through| I[TrueCreateRemoteThread]
+        E -->|Pass-through| J[TrueRegSetValueExW]
     end
 
-    %% 模組 B：被監控的行程
-    subgraph Target_Process [受監控的目標行程 Target.exe]
-        B -->|3. 載入| F[EdrMonitorDll.dll]
-        
-        subgraph Detours_Hook [Microsoft Detours 核心]
-            F -->|DllMain| G[DetourTransactionCommit]
-            G -->|修改暫存器/記憶體位址| H[HookedCreateProcessW]
-        end
-        
-        I[目標行程原業務邏輯] -->|呼叫| H
-        H -->|透過 具名管道 Named Pipe 送出日誌| C
-        H -->|導回原始 API 確保不崩潰| J[TrueCreateProcessW]
+    subgraph Python ["Python Automation"]
+        G -->|redirect stdout| K[events.log]
+        K -->|parse_events.py| L[summary.json / TTP Report]
     end
-
-    %% 套用樣式
-    class A,B,C,C2,F,I,J userSpace;
-    class G,H kernelSpace;
-    class D,E rAII;
 ```
+
+## Features
+
+- **Inline API Hooking** via Microsoft Detours — intercepts `VirtualAllocEx`, `CreateRemoteThread`, `RegSetValueExW`
+- **Thread-safe Event Queue** — lock-free push from hook callbacks, blocking pop with timeout in main loop
+- **Severity Classification** — `INFO` / `WARNING` / `CRITICAL` mapped to Windows API risk level
+- **MITRE ATT&CK T1055 Detection** — flags Process Injection pattern (VirtualAllocEx + CreateRemoteThread combo)
+- **Python Automation** — `parse_events.py` parses raw log output into structured JSON report
+- **Modern C++17** — `std::move` semantics, `std::optional`, `[[nodiscard]]`, RAII throughout
+
+
+## Demo
+
+### Detection Output
+![EDR Console Output](https://shorturl.at/DgV4c)
+
+### Python Report
+![parse_events output](https://shorturl.at/xnIH5)
+
+### Attack Simulation (T1055)
+The self-simulation sequence triggers the full T1055 detection chain:
+1. `VirtualAllocEx` with `PAGE_EXECUTE_READWRITE` → **CRITICAL**
+2. `WriteProcessMemory` → payload written to remote memory
+3. `CreateRemoteThread` → **CRITICAL**
+4. `parse_events.py` identifies the combo → **T1055 flagged**
+
+
+### Known Limitations & Next Steps
+
+| Limitation | Explanation | Production Solution |
+|------------|-------------|---------------------|
+| User-space only | Detours hooks live inside the monitored process; cannot intercept API calls from external processes | Kernel-mode minifilter driver (ETW or SSDT hook) |
+| Single-process scope | Self-monitoring PoC; real EDR requires cross-process visibility | Windows kernel callbacks (`PsSetCreateProcessNotifyRoutine`) |
+| No anti-tamper | Hooks can be bypassed via Direct Syscalls | Kernel-level protection |
+
+### Build
+
+**Requirements:** Visual Studio 2019+, Windows 10/11 x64, Microsoft Detours
+
+1. Open `EdrMonitorDll.sln` in Visual Studio
+2. Set platform to `x64`
+3. Build `EdrMonitorDll` (Static Library) first
+4. Build `ControllerEXE` (Console Application)
+5. Run `ControllerEXE.exe` as Administrator
+
