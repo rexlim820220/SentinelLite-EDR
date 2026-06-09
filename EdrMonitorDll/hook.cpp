@@ -5,7 +5,7 @@
 
 extern void AttachAllHooks();
 extern void DetachAllHooks();
-extern ThreadSafeQueue* g_pSafeQueue;
+ThreadSafeQueue* g_pSafeQueue = nullptr;
 
 void InitializeHooks(ThreadSafeQueue& queue)
 {

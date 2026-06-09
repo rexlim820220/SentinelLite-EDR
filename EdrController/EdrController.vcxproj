@@ -30,26 +30,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -77,13 +77,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)EdrMonitorDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\x64\Debug;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)EdrMonitorDll\x64\Debug;$(SolutionDir)EdrMonitorDll\Detours</AdditionalLibraryDirectories>
       <AdditionalDependencies>EdrMonitorDll.lib;
 detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
     </Link>
@@ -99,13 +99,13 @@ detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)EdrMonitorDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\x64\Debug;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)EdrMonitorDll\x64\Debug;$(SolutionDir)EdrMonitorDll\Detours</AdditionalLibraryDirectories>
       <AdditionalDependencies>EdrMonitorDll.lib;
 detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
     </Link>
@@ -120,14 +120,14 @@ detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)EdrMonitorDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>EdrMonitorDll.lib;
 detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\x64\Debug;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)EdrMonitorDll\x64\Debug;$(SolutionDir)EdrMonitorDll\Detours</AdditionalLibraryDirectories>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -145,13 +145,13 @@ detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)EdrMonitorDll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\x64\Debug;C:\Users\User\source\repos\SentinelLite-EDR\EdrMonitorDll\EdrMonitorDll\Detours</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)EdrMonitorDll\x64\Debug;$(SolutionDir)EdrMonitorDll\Detours</AdditionalLibraryDirectories>
       <AdditionalDependencies>EdrMonitorDll.lib;
 detours.lib;Advapi32.lib;User32.lib</AdditionalDependencies>
     </Link>

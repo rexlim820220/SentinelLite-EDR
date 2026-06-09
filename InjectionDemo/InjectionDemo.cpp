@@ -1,4 +1,4 @@
-﻿// injection_demo.cpp
+// injection_demo.cpp
 // SentinelLite-EDR — Process Injection 攻擊模擬器
 // MITRE ATT&CK T1055：Process Injection
 //
